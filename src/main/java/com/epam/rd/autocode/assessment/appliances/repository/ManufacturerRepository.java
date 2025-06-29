@@ -1,4 +1,7 @@
 package com.epam.rd.autocode.assessment.appliances.repository;
 
-public interface ManufacturerRepository {
+import com.epam.rd.autocode.assessment.appliances.model.Manufacturer;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ManufacturerRepository extends JpaRepository<Manufacturer, Long> {
 }
