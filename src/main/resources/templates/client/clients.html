@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <!-- Latest compiled and minified CSS -->
@@ -13,39 +13,47 @@
 </head>
 <body>
 <div th:insert="~{menunavy::navy}"></div>
-<h1 th:text="#{client.header.list}"></h1>
-<table class="table table-hover">
-    <thead>
-    <tr class="table-dark">
-        <th th:text="#{object.user.id}"></th>
-        <th th:text="#{object.user.name}"></th>
-        <th th:text="#{object.user.email}"></th>
-        <th th:text="#{object.user.password}"></th>
-        <th th:text="#{object.client.card}"></th>
-        <th >Operation</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="client: ${clients}">
-        <td th:text="${client.id}"/>
-        <td th:text="${client.name}"/>
-        <td th:text="${client.email}"/>
-        <td th:text="${client.password}"/>
-        <td th:text="${client.card}"/>
-        <td>
-            <div>
-                <a th:href="@{clients/}+${client.id}+@{/delete}">
-                    <span class="icon">
-                          <i class="fa fa-minus"></i>
-                    </span>
-                </a>
-            </div>
-        </td>
-    </tr>
 
-</tbody>
-</table>
-<a th:href="@{clients/add}" class="btn btn-primary" th:text="#{client.btn.new}">New client</a>
+<div class="container mt-4">
+    <h1 th:text="#{client.header.list}">Clients List</h1>
+    <table class="table table-hover mt-3">
+        <thead class="table-dark">
+        <tr>
+            <th th:text="#{object.user.id}">ID</th>
+            <th th:text="#{object.user.name}">Name</th>
+            <th th:text="#{object.user.email}">Email</th>
+            <th th:text="#{object.user.password}">Password</th>
+            <th th:text="#{object.client.card}">Card</th>
+            <th>Operation</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="client : ${clients}">
+            <td th:text="${client.id}"></td>
+            <td th:text="${client.name}"></td>
+            <td th:text="${client.email}"></td>
+            <td th:text="${client.password}"></td>
+            <td th:text="${client.card}"></td>
+            <td>
+                <a th:href="@{/clients/{id}/edit(id=${client.id})}" class="me-2" title="#{action.edit}">
+                    <i class="fa fa-pencil"></i>
+                </a>
+                <a th:href="@{/clients/{id}/delete(id=${client.id})}" title="#{action.delete}">
+                    <i class="fa fa-minus"></i>
+                </a>
+            </td>
+            <td sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')">
+                <a th:href="@{/orders/client/{clientId}/cart(clientId=${client.id})}"
+                   class="btn btn-sm btn-outline-primary">
+                    Create Order
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <a th:href="@{/clients/new}" class="btn btn-primary" th:text="#{client.btn.new}">New Client</a>
+</div>
+
 <div th:insert="~{footer::footer}"></div>
 </body>
 </html>

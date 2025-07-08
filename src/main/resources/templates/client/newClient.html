@@ -11,31 +11,40 @@
 </head>
 <body>
 <div th:insert="~{menunavy::navy}"></div>
-<h1 th:text="#{client.btn.new}"></h1>
-<form action="#" th:action="@{add-client}" th:object="${client}" method="post">
-    <p>
-        <p th:if="${#fields.hasErrors('name')}" class="text-danger" th:text="#{user.name.is.mandatory}"></p>
-        <span th:text="#{object.user.name}">
-        </span> <input type="text" th:field="*{name}"/>
-    </p>
-    <p>
-        <p th:if="${#fields.hasErrors('email')}" class="text-danger" th:text="#{user.email.is.correctly}"></p>
-        <p th:if="${#fields.hasErrors('email')}" class="text-danger" th:text="#{user.email.is.blank}"></p>
-        <span th:text="#{object.user.email}"></span>
-        <input type="text" th:field="*{email}"/>
-    </p>
-    <p>
-        <p th:if="${#fields.hasErrors('password')}" class="text-danger" th:text="#{user.password.is.correctly}">Invalid password</p>
-        <span th:text="#{object.user.password}"></span>
-        <input type="text" th:field="*{password}"/>
-    </p>
-    <p>
-        <p th:if="${#fields.hasErrors('card')}" class="text-danger">Invalid card</p>
-        <span th:text="#{object.client.card}"></span>
-        <input type="text" th:field="*{card}"/>
-    </p>
-    <p><input type="submit" value="Submit"/> <input type="reset" value="Reset"/></p>
-</form>
+
+<div class="container mt-4">
+    <h1 th:text="#{client.new.title}">New Client</h1>
+    <form th:action="@{/clients}" th:object="${client}" method="post" novalidate class="mt-3">
+
+        <div class="mb-3">
+            <label for="name" class="form-label" th:text="#{object.user.name}">Name</label>
+            <input type="text" id="name" th:field="*{name}" class="form-control"/>
+            <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label" th:text="#{object.user.email}">Email</label>
+            <input type="email" id="email" th:field="*{email}" class="form-control"/>
+            <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label" th:text="#{object.user.password}">Password</label>
+            <input type="password" id="password" th:field="*{password}" class="form-control"/>
+            <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="card" class="form-label" th:text="#{object.client.card}">Card</label>
+            <input type="text" id="card" th:field="*{card}" class="form-control"/>
+            <div th:if="${#fields.hasErrors('card')}" th:errors="*{card}" class="text-danger"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" th:text="#{action.save}">Save</button>
+        <a th:href="@{/clients}" class="btn btn-secondary" th:text="#{action.cancel}">Cancel</a>
+    </form>
+</div>
+
 <div th:insert="~{footer::footer}"></div>
 </body>
 </html>

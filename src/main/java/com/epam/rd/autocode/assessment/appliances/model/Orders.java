@@ -18,8 +18,8 @@ public class Orders {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** by employee */
-    private Boolean approved;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 
     @ManyToOne
     @JoinColumn(name = "client_id")
@@ -29,7 +29,6 @@ public class Orders {
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
-    /** order rows */
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "orders_id")
     private Set<OrderRow> orderRowSet;

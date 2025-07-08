@@ -1,0 +1,63 @@
+<!-- src/main/resources/templates/order/viewOrder.html -->
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="#{orders.header.view}">View Order</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet"/>
+</head>
+<body>
+<div th:insert="~{menunavy::navy}"></div>
+<div class="container mt-4">
+    <h1 th:text="#{orders.header.view}">Order Details</h1>
+    <table class="table table-hover">
+        <thead>
+        <tr class="table-dark">
+            <th th:text="#{object.order.id}">ID</th>
+            <th th:text="#{object.appliance.name}">Name</th>
+            <th th:text="#{object.orderRow.quantity}">Quantity</th>
+            <th th:text="#{object.orderRow.amount}">Amount</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="r : ${order.orderRows}">
+            <td th:text="${r.id}">1</td>
+            <td th:text="${r.applianceName}">Claw</td>
+            <td th:text="${r.number}">2</td>
+            <!-- форматируем строку суммы -->
+            <td th:text="${#strings.replace(
+                           #numbers.formatDecimal(r.amount, 0, 2),
+                           ',', '.')}">
+                0.00
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <p>
+        <strong th:text="#{orders.label.total}">Total:</strong>
+        <span th:text="${#strings.replace(
+                           #numbers.formatDecimal(order.totalAmount, 0, 2),
+                           ',', '.')}">
+            0.00
+        </span>
+    </p>
+    <p>
+        <strong th:text="#{orders.label.bonus}">Bonus (5%):</strong>
+        <span th:text="${#strings.replace(
+                           #numbers.formatDecimal(
+                             order.totalAmount.multiply(
+                               T(java.math.BigDecimal).valueOf(0.05)
+                             ),
+                             0, 2
+                           ),
+                           ',', '.')}">
+            0.00
+        </span>
+    </p>
+    <a th:href="@{/orders}" class="btn btn-secondary"
+       th:text="#{action.back}">Back</a>
+</div>
+<div th:insert="~{footer::footer}"></div>
+</body>
+</html>

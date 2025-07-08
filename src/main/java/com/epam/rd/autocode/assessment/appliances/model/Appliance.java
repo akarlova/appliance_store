@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "appliance")
 @Data
-// @Data = @Getter + @Setter + @RequiredArgsConstructor + @ToString + @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 public class Appliance {

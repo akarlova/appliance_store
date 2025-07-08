@@ -28,4 +28,5 @@ public class OrderRow {
 
     /** quantity */
     private Long number;
+
 }

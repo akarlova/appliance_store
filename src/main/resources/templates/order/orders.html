@@ -1,77 +1,110 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 <head>
-    <meta charset="UTF-8">
-    <!-- Latest compiled and minified CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Latest compiled JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link th:href="@{/styles/css/main.css}" rel="stylesheet"/>
-    <title>Title</title>
+    <meta charset="UTF-8"/>
+    <title th:text="#{orders.header.list}">Orders List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet"/>
 </head>
 <body>
-<header>
-    <div th:insert="~{menunavy::navy}"></div>
-</header>
-<main>
-    <h1 th:text="#{orders.header.list}">Orders list</h1>
+<div th:insert="~{menunavy::navy}"></div>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 th:text="#{orders.header.list}">Orders List</h1>
+        <a th:href="@{/appliances}"
+           class="btn btn-primary"
+           sec:authorize="hasRole('CLIENT')"
+           th:text="#{orders.btn.new}">New Order</a>
+    </div>
+
     <table class="table table-hover">
         <thead>
         <tr class="table-dark">
-            <th>ID</th>
-            <th>Client</th>
-            <th>Employee</th>
-            <th>Approved</th>
-            <th>Amount</th>
-            <th>Operation</th>
+            <th th:text="#{object.order.id}">ID</th>
+            <th th:text="#{object.order.status}">Status</th>
+            <th th:text="#{object.order.totalAmount}">Total Amount</th>
+
+            <th sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')" th:text="#{object.order.clientName}">
+                Client Name
+            </th>
+            <th sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')" th:text="#{object.order.clientEmail}">
+                Client Email
+            </th>
+            <th sec:authorize="hasRole('ADMIN')" th:text="#{object.order.employeeName}">
+                Employee
+            </th>
+            <th sec:authorize="hasAnyRole('ADMIN')" th:text="#{object.order.employeeDepartment}">
+                Department
+            </th>
+            <th th:text="#{object.operation}">Operation</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="order: ${orders}">
-            <td><span class="float-end" th:text="${order.id}"/></td>
-            <td><span class="float-end" th:text="${order.client}"/></td>
-            <td><span class="float-end" th:text="${order.employee}"/></td>
-            <td>
-                <div th:if="${order.approved}">
-                    <a th:href="@{orders/}+${order.id}+@{/unapproved}">
-                      <span class="icon">
-                        <i class="fa fa-check"></i>
-                      </span>
-
-                    </a>
-                </div>
-                <!-- ELSE -->
-                <div th:unless="${order.approved}">
-                    <a th:href="@{orders/}+${order.id}+@{/approved}">
-                    <span class="icon">
-                          <i class="fa fa-minus"></i>
-                    </span>
-
-                    </a>
-                </div>
+        <tr th:each="o : ${orders}">
+            <td th:text="${o.id}">1</td>
+            <td th:switch="${o.status}">
+                <span th:case="'IN_PROGRESS'" th:text="#{orders.status.inProgress}">In Progress</span>
+                <span th:case="'APPROVED'" th:text="#{orders.status.approved}">Approved</span>
+                <span th:case="'CANCELED'" th:text="#{orders.status.canceled}">Canceled</span>
             </td>
-            <td><span class="float-end" th:text="${order.getAmount}"/></td>
-            <td>
-                <div>
-                    <a th:href="@{orders/}+${order.id}+@{/delete}">
-                        <i class="fa fa-times"></i>
-                    </a>
-                </div>
-                <div>
-                    <a th:href="@{orders/}+${order.id}+@{/edit}">
-                        <i class="fa fa-edit"></i>
-                    </a>
-                </div>
+            <td th:text="${#numbers.formatDecimal(o.totalAmount,0,2)}">0.00</td>
 
+            <td sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')" th:text="${o.clientName}">Client</td>
+            <td sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')" th:text="${o.clientEmail}">email</td>
+            <td sec:authorize="hasRole('ADMIN')" th:text="${o.employeeName}">Emp</td>
+            <td sec:authorize="hasRole('ADMIN')" th:text="${o.employeeDepartment}">Dept</td>
+
+            <td class="d-flex gap-1">
+
+                <a th:href="@{/orders/{id}(id=${o.id})}"
+                   class="btn btn-sm btn-outline-primary"
+                   sec:authorize="hasRole('CLIENT')"
+                   th:text="#{orders.btn.view}">View</a>
+
+                <a th:if="${o.status=='IN_PROGRESS'}"
+                   th:href="@{/orders/{id}/cancel(id=${o.id})}"
+                   class="btn btn-sm btn-outline-danger"
+                   sec:authorize="hasRole('CLIENT')"
+                   th:text="#{orders.btn.cancel}">Cancel</a>
+
+                <a th:if="${o.status=='IN_PROGRESS'}"
+                   th:href="@{/orders/{id}/cart(id=${o.id})}"
+                   class="btn btn-sm btn-outline-primary"
+                   sec:authorize="hasRole('CLIENT')"
+                   th:text="#{orders.btn.edit}">Edit</a>
+
+                <a th:if="${o.status=='IN_PROGRESS'}"
+                   th:href="@{/orders/{id}/approve(id=${o.id})}"
+                   class="btn btn-sm btn-outline-success"
+                   sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')"
+                   th:text="#{orders.btn.approve}">Approve</a>
+
+                <a th:if="${o.status=='IN_PROGRESS'}"
+                   th:href="@{/orders/{id}/cancel(id=${o.id})}"
+                   class="btn btn-sm btn-outline-danger"
+                   sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')"
+                   th:text="#{orders.btn.cancel}">Cancel</a>
+
+                <a th:if="${o.status=='IN_PROGRESS'}"
+                   th:href="@{/orders/{id}/cart(id=${o.id})}"
+                   class="btn btn-sm btn-outline-primary"
+                   sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')"
+                   th:text="#{orders.btn.edit}">Edit</a>
+
+                <a th:if="${o.status!='IN_PROGRESS'}"
+                   th:href="@{/orders/{id}(id=${o.id})}"
+                   class="btn btn-sm btn-outline-primary"
+                   sec:authorize="hasAnyRole('EMPLOYEE','ADMIN')"
+                   th:text="#{orders.btn.view}">View</a>
             </td>
         </tr>
         </tbody>
     </table>
-    <a th:href="@{orders/add}" class="btn btn-primary" th:text="#{orders.btn.new}"></a>
-</main>
+</div>
+
 <div th:insert="~{footer::footer}"></div>
 </body>
 </html>
