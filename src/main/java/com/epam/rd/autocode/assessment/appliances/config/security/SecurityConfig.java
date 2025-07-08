@@ -104,8 +104,8 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
-                        .failureHandler(failureHandler)   // ← вот сюда
-                        .successHandler(successHandler)   // ← и сюда
+                        .failureHandler(failureHandler)
+                        .successHandler(successHandler)
                         .permitAll()
 
                 )

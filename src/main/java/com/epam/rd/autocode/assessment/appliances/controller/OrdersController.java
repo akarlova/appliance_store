@@ -158,6 +158,7 @@ public class OrdersController {
     @GetMapping("/{id}/approve")
     public String approve(@PathVariable("id") Long id,
                           Principal principal) {
+        System.out.println("APPROVE principal.getName(): " + principal.getName());
         orderService.approve(id, principal);
         return "redirect:/orders";
     }

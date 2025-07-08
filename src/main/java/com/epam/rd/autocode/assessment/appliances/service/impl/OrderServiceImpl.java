@@ -127,10 +127,18 @@ public class OrderServiceImpl implements OrderService {
     public OrdersDto approve(Long id, Principal principal) {
         Orders o = ordersRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found: " + id));
-        Employee emp = empRepo.findByEmail(principal.getName())
-                .orElseThrow(() -> new ResourceNotFoundException("Employee not found: " + principal.getName()));
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isEmployee = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_EMPLOYEE"));
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (isEmployee || isAdmin) {
+            empRepo.findByEmail(principal.getName())
+                    .ifPresent(o::setEmployee);
+        }
         o.setStatus(OrderStatus.APPROVED);
-        o.setEmployee(emp);
         Orders saved = ordersRepo.save(o);
         return toDto(saved);
     }
@@ -296,10 +304,18 @@ public class OrderServiceImpl implements OrderService {
     public void cancelOrder(Long orderId, Principal principal) {
         Orders o = ordersRepo.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found: " + orderId));
-        Employee emp = empRepo.findByEmail(principal.getName())
-                .orElseThrow(() -> new ResourceNotFoundException("Employee not found: " + principal.getName()));
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isEmployee = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_EMPLOYEE"));
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (isEmployee || isAdmin) {
+            empRepo.findByEmail(principal.getName())
+                    .ifPresent(o::setEmployee);
+        }
         o.setStatus(OrderStatus.CANCELED);
-        o.setEmployee(emp);
         ordersRepo.save(o);
     }
 
